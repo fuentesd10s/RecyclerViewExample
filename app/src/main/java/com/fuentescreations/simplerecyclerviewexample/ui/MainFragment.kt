@@ -24,7 +24,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         TabLayoutMediator(binding.tabLayout2,binding.viewPager2){tab,position->
             when(position){
                 0->tab.text="Photos"
-                1->tab.text="Images"
+                1->tab.text="Dogs"
             }
         }.attach()
     }

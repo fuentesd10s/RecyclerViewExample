@@ -21,39 +21,37 @@ class PhotosViewModel : ViewModel() {
         listPhotosLiveData.value = listPhotos
     }
 
-    fun getListPhotos(callBack: APICallBack) {
-
-        val mRetrofit = getRetrofit().create(APIService::class.java)
-
-        val call = mRetrofit.getPhotos()
-
-        call.enqueue(object : Callback<List<Photos>> {
-            override fun onResponse(
-                    call: Call<List<Photos>>,
-                    response: Response<List<Photos>>
-            ) {
-                if (response.isSuccessful) {
-
-                    setListPhotos(response.body()!!)
-                    callBack.onSuccess()
-                }
-            }
-
-            override fun onFailure(call: Call<List<Photos>>, t: Throwable) {
-                setListPhotos(mutableListOf())
-                callBack.onFailure(t.toString())
-            }
-        })
-    }
-
     fun getListPhotosLiveData(): LiveData<List<Photos>> {
         return listPhotosLiveData
     }
 
-    private fun getRetrofit(): Retrofit {
-        return Retrofit.Builder()
+    fun getListPhotos(callBack: APICallBack) {
+
+        val mRetrofit = Retrofit
+                .Builder()
                 .baseUrl(AppConstans.BASE_URL_PHOTOS)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
+                .create(APIService::class.java)
+
+        mRetrofit
+                .getPhotos()
+                .enqueue(object : Callback<List<Photos>> {
+                    override fun onResponse(
+                            call: Call<List<Photos>>,
+                            response: Response<List<Photos>>
+                    ) {
+                        if (response.isSuccessful) {
+
+                            setListPhotos(response.body()!!)
+                            callBack.onSuccess()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<Photos>>, t: Throwable) {
+                        setListPhotos(mutableListOf())
+                        callBack.onFailure(t.toString())
+                    }
+                })
     }
 }
