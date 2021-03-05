@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 data class Dogs(
         val status: String="",
         @SerializedName("message")
-        val images: MutableList<String> = mutableListOf()
+        val images: List<String> = listOf()
 )

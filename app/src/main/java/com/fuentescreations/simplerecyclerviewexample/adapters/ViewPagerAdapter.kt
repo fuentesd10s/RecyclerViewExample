@@ -7,7 +7,7 @@ import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
 import com.fuentescreations.simplerecyclerviewexample.ui.ListFragment
 
 class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-    override fun getItemCount(): Int = 2
+    override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment {
         val mFragment=ListFragment()

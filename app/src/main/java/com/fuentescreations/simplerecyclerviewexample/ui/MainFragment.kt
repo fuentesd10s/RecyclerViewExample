@@ -25,6 +25,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             when(position){
                 0->tab.text="Photos"
                 1->tab.text="Dogs"
+                2->tab.text="User Profiles"
             }
         }.attach()
     }

@@ -10,19 +10,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.fuentescreations.simplerecyclerviewexample.R
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterDogs
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterPhotos
+import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterUserProfiles
 import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
-import com.fuentescreations.simplerecyclerviewexample.api.APIService
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
 import com.fuentescreations.simplerecyclerviewexample.repository.models.Photos
 import com.fuentescreations.simplerecyclerviewexample.databinding.FragmentListBinding
-import com.fuentescreations.simplerecyclerviewexample.repository.models.Dogs
+import com.fuentescreations.simplerecyclerviewexample.repository.models.UserProfile
 import com.fuentescreations.simplerecyclerviewexample.viewmodels.DogsViewModel
 import com.fuentescreations.simplerecyclerviewexample.viewmodels.PhotosViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.fuentescreations.simplerecyclerviewexample.viewmodels.UserProfileViewModel
 
 class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosClickListener {
 
@@ -37,38 +33,35 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
             when (getInt(AppConstans.TAB_POSITION)) {
                 0 -> setupTabPhotos()
                 1 -> setupTabDogs()
+                2 -> setupUserProfiles()
             }
         }
 
     }
 
-    private fun setupTabDogs() {
-        binding.btnRetry.setOnClickListener {
-            setupTabDogs()
-        }
+    private fun setupUserProfiles() {
+        binding.btnRetry.setOnClickListener { setupUserProfiles() }
 
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            setupTabDogs()
-        }
+        binding.swipeRefreshLayout.setOnRefreshListener { setupUserProfiles() }
 
         showLoading()
 
-        val listDogs = mutableListOf<String>()
+        val userProfilesList = mutableListOf<UserProfile>()
 
-        val adapterDogs = AdapterDogs(listDogs)
-        binding.rv.adapter=adapterDogs
+        val adapterUserProfiles=AdapterUserProfiles(userProfilesList)
+        binding.rv.adapter=adapterUserProfiles
 
-        val viewModelDogs=ViewModelProvider(this).get(DogsViewModel::class.java)
+        val viewModelUserProfiles=ViewModelProvider(this).get(UserProfileViewModel::class.java)
 
-        val dogs = Observer<List<String>> {
-            listDogs.clear()
-            listDogs.addAll(it)
-            adapterDogs.notifyDataSetChanged()
+        val userProfilesObserver= Observer<List<UserProfile>> {
+            userProfilesList.clear()
+            userProfilesList.addAll(it)
+            adapterUserProfiles.notifyDataSetChanged()
         }
 
-        viewModelDogs.getListDogsLiveData().observe(viewLifecycleOwner,dogs)
+        viewModelUserProfiles.getUserProfilesLiveData().observe(viewLifecycleOwner,userProfilesObserver)
 
-        viewModelDogs.getListDogs(object : APICallBack{
+        viewModelUserProfiles.getUserProfilesList(object : APICallBack{
             override fun onSuccess() {
                 successLoading()
             }
@@ -76,18 +69,47 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
             override fun onFailure(error: String) {
                 errorLoading(error)
             }
+        })
+    }
 
+
+    private fun setupTabDogs() {
+        binding.btnRetry.setOnClickListener { setupTabDogs() }
+
+        binding.swipeRefreshLayout.setOnRefreshListener { setupTabDogs() }
+
+        showLoading()
+
+        val listDogs = mutableListOf<String>()
+
+        val adapterDogs = AdapterDogs(listDogs)
+        binding.rv.adapter = adapterDogs
+
+        val viewModelDogs = ViewModelProvider(this).get(DogsViewModel::class.java)
+
+        val dogsObserver = Observer<List<String>> {
+            listDogs.clear()
+            listDogs.addAll(it)
+            adapterDogs.notifyDataSetChanged()
+        }
+
+        viewModelDogs.getListDogsLiveData().observe(viewLifecycleOwner, dogsObserver)
+
+        viewModelDogs.getListDogs(object : APICallBack {
+            override fun onSuccess() {
+                successLoading()
+            }
+
+            override fun onFailure(error: String) {
+                errorLoading(error)
+            }
         })
     }
 
     private fun setupTabPhotos() {
-        binding.btnRetry.setOnClickListener {
-            setupTabPhotos()
-        }
+        binding.btnRetry.setOnClickListener { setupTabPhotos() }
 
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            setupTabPhotos()
-        }
+        binding.swipeRefreshLayout.setOnRefreshListener { setupTabPhotos() }
 
         showLoading()
 
@@ -98,13 +120,13 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
 
         val viewModelPhotos = ViewModelProvider(this).get(PhotosViewModel::class.java)
 
-        val photos = Observer<List<Photos>> {
+        val photosObserver = Observer<List<Photos>> {
             listPhotos.clear()
             listPhotos.addAll(it)
             adapterPhotos.notifyDataSetChanged()
         }
 
-        viewModelPhotos.getListPhotosLiveData().observe(viewLifecycleOwner, photos)
+        viewModelPhotos.getListPhotosLiveData().observe(viewLifecycleOwner, photosObserver)
 
         viewModelPhotos.getListPhotos(object : APICallBack {
             override fun onSuccess() {
@@ -114,7 +136,6 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
             override fun onFailure(error: String) {
                 errorLoading(error)
             }
-
         })
     }
 
@@ -124,12 +145,12 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
         binding.swipeRefreshLayout.isRefreshing = true
     }
 
-    private fun successLoading(){
+    private fun successLoading() {
         binding.rv.visibility = View.VISIBLE
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun errorLoading(error:String) {
+    private fun errorLoading(error: String) {
         binding.swipeRefreshLayout.isRefreshing = false
         binding.lyNoInternet.visibility = View.VISIBLE
         Log.d("Error", "onFailure: $error")
