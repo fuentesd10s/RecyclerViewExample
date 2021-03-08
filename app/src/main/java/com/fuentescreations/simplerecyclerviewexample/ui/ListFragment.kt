@@ -7,20 +7,22 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.fuentescreations.simplerecyclerviewexample.R
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterDogs
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterPhotos
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterUserProfiles
 import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
-import com.fuentescreations.simplerecyclerviewexample.repository.models.Photos
+import com.fuentescreations.simplerecyclerviewexample.application.BaseFragment
+import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
 import com.fuentescreations.simplerecyclerviewexample.databinding.FragmentListBinding
-import com.fuentescreations.simplerecyclerviewexample.repository.models.UserProfile
+import com.fuentescreations.simplerecyclerviewexample.data.models.UserProfile
 import com.fuentescreations.simplerecyclerviewexample.viewmodels.DogsViewModel
 import com.fuentescreations.simplerecyclerviewexample.viewmodels.PhotosViewModel
 import com.fuentescreations.simplerecyclerviewexample.viewmodels.UserProfileViewModel
 
-class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosClickListener {
+class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhotosClickListener,AdapterUserProfiles.OnUserProfileClickListener {
 
     private lateinit var binding: FragmentListBinding
 
@@ -36,7 +38,6 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
                 2 -> setupUserProfiles()
             }
         }
-
     }
 
     private fun setupUserProfiles() {
@@ -48,7 +49,7 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
 
         val userProfilesList = mutableListOf<UserProfile>()
 
-        val adapterUserProfiles=AdapterUserProfiles(userProfilesList)
+        val adapterUserProfiles=AdapterUserProfiles(userProfilesList,this@ListFragment)
         binding.rv.adapter=adapterUserProfiles
 
         val viewModelUserProfiles=ViewModelProvider(this).get(UserProfileViewModel::class.java)
@@ -157,6 +158,11 @@ class ListFragment : Fragment(R.layout.fragment_list), AdapterPhotos.OnPhotosCli
     }
 
     override fun onPhotosShortClickListener(modelPhotos: Photos) {
-        Toast.makeText(requireContext(), modelPhotos.toString(), Toast.LENGTH_SHORT).show()
+        mToast(modelPhotos.toString())
+    }
+
+    override fun onShortUserProfileClickListener(userProfile: UserProfile) {
+        val action= MainFragmentDirections.actionMainFragmentToUserProfileFragment(userProfile)
+        findNavController().navigate(action)
     }
 }

@@ -2,15 +2,27 @@ package com.fuentescreations.simplerecyclerviewexample.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fuentescreations.simplerecyclerviewexample.databinding.ItemUserProfileBinding
-import com.fuentescreations.simplerecyclerviewexample.repository.models.UserProfile
+import com.fuentescreations.simplerecyclerviewexample.data.models.UserProfile
 
-class AdapterUserProfiles(private val userProfilesList:List<UserProfile>) : RecyclerView.Adapter<AdapterUserProfiles.UserProfilesViewHolder>() {
+class AdapterUserProfiles(private val userProfilesList:List<UserProfile>,private val onUserProfileClickListener: OnUserProfileClickListener) : RecyclerView.Adapter<AdapterUserProfiles.UserProfilesViewHolder>() {
+
+    interface OnUserProfileClickListener{
+        fun onShortUserProfileClickListener(userProfile: UserProfile)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserProfilesViewHolder {
         val binding=ItemUserProfileBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         val holder= UserProfilesViewHolder(binding)
+
+        binding.root.setOnClickListener {
+            val position= holder.adapterPosition.takeIf { it!= DiffUtil.DiffResult.NO_POSITION }
+                    ?: return@setOnClickListener
+
+            onUserProfileClickListener.onShortUserProfileClickListener(userProfilesList[position])
+        }
         return holder
     }
 

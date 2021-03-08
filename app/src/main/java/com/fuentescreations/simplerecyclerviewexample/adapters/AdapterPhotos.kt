@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.fuentescreations.simplerecyclerviewexample.repository.models.Photos
+import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
 import com.fuentescreations.simplerecyclerviewexample.databinding.ItemPhotosBinding
 import com.squareup.picasso.Picasso
 

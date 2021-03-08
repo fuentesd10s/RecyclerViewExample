@@ -1,4 +1,4 @@
-package com.fuentescreations.simplerecyclerviewexample.repository.models
+package com.fuentescreations.simplerecyclerviewexample.data.models
 
 import com.google.gson.annotations.SerializedName
 

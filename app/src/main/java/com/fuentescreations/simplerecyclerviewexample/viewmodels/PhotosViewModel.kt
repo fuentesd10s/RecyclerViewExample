@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.fuentescreations.simplerecyclerviewexample.api.APIService
 import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
-import com.fuentescreations.simplerecyclerviewexample.repository.models.Photos
+import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
