@@ -1,4 +1,4 @@
-package com.fuentescreations.simplerecyclerviewexample.ui
+package com.fuentescreations.simplerecyclerviewexample.ui.fragments
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -17,7 +17,7 @@ class UserProfileFragment : BaseFragment(R.layout.fragment_user_profile), Adapte
 
     private lateinit var binding:FragmentUserProfileBinding
     private lateinit var userProfile:UserProfile
-    private val args:UserProfileFragmentArgs by navArgs()
+    private val args: UserProfileFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

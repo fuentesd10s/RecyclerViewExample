@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.fuentescreations.simplerecyclerviewexample.ui.MainFragment"
+        android:name="com.fuentescreations.simplerecyclerviewexample.ui.fragments.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/userProfileFragment"
-        android:name="com.fuentescreations.simplerecyclerviewexample.ui.UserProfileFragment"
+        android:name="com.fuentescreations.simplerecyclerviewexample.ui.fragments.UserProfileFragment"
         android:label="fragment_user_profile"
         tools:layout="@layout/fragment_user_profile" >
         <argument android:name="userProfileArg"

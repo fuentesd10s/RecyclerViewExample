@@ -1,10 +1,8 @@
-package com.fuentescreations.simplerecyclerviewexample.ui
+package com.fuentescreations.simplerecyclerviewexample.ui.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -33,9 +31,9 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         arguments?.takeIf { it.containsKey(AppConstans.TAB_POSITION) }?.apply {
 
             when (getInt(AppConstans.TAB_POSITION)) {
-                0 -> setupTabPhotos()
+                0 -> setupUserProfiles()
                 1 -> setupTabDogs()
-                2 -> setupUserProfiles()
+                2 -> setupTabPhotos()
             }
         }
     }
@@ -45,7 +43,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         binding.swipeRefreshLayout.setOnRefreshListener { setupUserProfiles() }
 
-        showLoading()
+        onShowLoading()
 
         val userProfilesList = mutableListOf<UserProfile>()
 
@@ -64,11 +62,11 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         viewModelUserProfiles.getUserProfilesList(object : APICallBack{
             override fun onSuccess() {
-                successLoading()
+                onSuccessLoading()
             }
 
             override fun onFailure(error: String) {
-                errorLoading(error)
+                onErrorLoading(error)
             }
         })
     }
@@ -79,7 +77,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         binding.swipeRefreshLayout.setOnRefreshListener { setupTabDogs() }
 
-        showLoading()
+        onShowLoading()
 
         val listDogs = mutableListOf<String>()
 
@@ -98,11 +96,11 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         viewModelDogs.getListDogs(object : APICallBack {
             override fun onSuccess() {
-                successLoading()
+                onSuccessLoading()
             }
 
             override fun onFailure(error: String) {
-                errorLoading(error)
+                onErrorLoading(error)
             }
         })
     }
@@ -112,7 +110,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         binding.swipeRefreshLayout.setOnRefreshListener { setupTabPhotos() }
 
-        showLoading()
+        onShowLoading()
 
         val listPhotos = mutableListOf<Photos>()
 
@@ -131,27 +129,27 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         viewModelPhotos.getListPhotos(object : APICallBack {
             override fun onSuccess() {
-                successLoading()
+                onSuccessLoading()
             }
 
             override fun onFailure(error: String) {
-                errorLoading(error)
+                onErrorLoading(error)
             }
         })
     }
 
-    private fun showLoading() {
+    private fun onShowLoading() {
         binding.rv.visibility = View.GONE
         binding.lyNoInternet.visibility = View.GONE
         binding.swipeRefreshLayout.isRefreshing = true
     }
 
-    private fun successLoading() {
+    private fun onSuccessLoading() {
         binding.rv.visibility = View.VISIBLE
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun errorLoading(error: String) {
+    private fun onErrorLoading(error: String) {
         binding.swipeRefreshLayout.isRefreshing = false
         binding.lyNoInternet.visibility = View.VISIBLE
         Log.d("Error", "onFailure: $error")
