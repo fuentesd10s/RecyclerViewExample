@@ -1,53 +1,35 @@
 package com.fuentescreations.simplerecyclerviewexample.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
-import com.fuentescreations.simplerecyclerviewexample.api.APIService
+import androidx.lifecycle.*
+import com.fuentescreations.simplerecyclerviewexample.data.api.APICallBack
+import com.fuentescreations.simplerecyclerviewexample.data.api.APIService
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
+import com.fuentescreations.simplerecyclerviewexample.application.ResultState
 import com.fuentescreations.simplerecyclerviewexample.data.models.Dogs
+import com.fuentescreations.simplerecyclerviewexample.domain.dogs.DogsRepo
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 
-class DogsViewModel : ViewModel() {
+class DogsViewModel(private val repo: DogsRepo) : ViewModel() {
 
-    private val listDogsLiveData = MutableLiveData<List<String>>()
+    fun getDogs() = liveData(Dispatchers.IO) {
+        emit(ResultState.Loading())
 
-    private fun setListDogs(listDogs: List<String>) {
-        listDogsLiveData.value = listDogs
+        try {
+            emit(repo.getDogs())
+        } catch (e: Exception) {
+            emit(ResultState.Failure(e))
+        }
     }
+}
 
-    fun getListDogsLiveData(): LiveData<List<String>> {
-        return listDogsLiveData
-    }
-
-    fun getListDogs(callBack: APICallBack) {
-        val mRetrofit = Retrofit
-                .Builder()
-                .baseUrl(AppConstans.BASE_URL_DOGS)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(APIService::class.java)
-
-        mRetrofit
-                .getRandomDogs()
-                .enqueue(object : Callback<Dogs>{
-                    override fun onResponse(call: Call<Dogs>, response: Response<Dogs>) {
-                        if (response.isSuccessful){
-                            setListDogs(response.body()!!.images)
-                            callBack.onSuccess()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Dogs>, t: Throwable) {
-                        setListDogs(listOf())
-                        callBack.onFailure(t.toString())
-                    }
-
-                })
+class DogsViewModelFactory(private val repo: DogsRepo) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return DogsViewModel(repo) as T
     }
 }

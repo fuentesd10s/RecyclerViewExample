@@ -1,4 +1,4 @@
-package com.fuentescreations.simplerecyclerviewexample.api
+package com.fuentescreations.simplerecyclerviewexample.data.api
 
 import com.fuentescreations.simplerecyclerviewexample.data.models.Dogs
 import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
@@ -17,6 +17,9 @@ interface APIService {
 
     @GET("image/random/10")
     fun getRandomDogs(): Call<Dogs>
+
+    @GET("image/random/10")
+    suspend fun getRandomDogs2(): Dogs
 
     @GET
     fun getUserProfiles(@Url url:String): Call<List<UserProfile>>

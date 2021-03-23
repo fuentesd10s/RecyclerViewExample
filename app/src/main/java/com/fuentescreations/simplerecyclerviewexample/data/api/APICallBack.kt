@@ -1,4 +1,4 @@
-package com.fuentescreations.simplerecyclerviewexample.api
+package com.fuentescreations.simplerecyclerviewexample.data.api
 
 interface APICallBack {
     fun onSuccess()

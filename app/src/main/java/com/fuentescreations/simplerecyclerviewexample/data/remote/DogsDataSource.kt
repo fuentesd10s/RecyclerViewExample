@@ -1,25 +1,24 @@
 package com.fuentescreations.simplerecyclerviewexample.data.remote
 
-import com.fuentescreations.simplerecyclerviewexample.data.api.APIService
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
 import com.fuentescreations.simplerecyclerviewexample.application.ResultState
-import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
+import com.fuentescreations.simplerecyclerviewexample.data.api.APIService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class PhotosDataSource {
-    suspend fun getLatestPosts(): ResultState<List<Photos>>{
-        val photosList = mutableListOf<Photos>()
+class DogsDataSource {
+    suspend fun getDogs(): ResultState<List<String>> {
+        val dogs = mutableListOf<String>()
 
         val mRetrofit = Retrofit
             .Builder()
-            .baseUrl(AppConstans.BASE_URL_PHOTOS)
+            .baseUrl(AppConstans.BASE_URL_DOGS)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIService::class.java)
 
-        photosList.addAll(mRetrofit.getPhotos2())
+        dogs.addAll(mRetrofit.getRandomDogs2().images)
 
-        return ResultState.Success(photosList)
+        return ResultState.Success(dogs)
     }
 }

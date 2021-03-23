@@ -11,24 +11,32 @@ import com.fuentescreations.simplerecyclerviewexample.R
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterDogs
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterPhotos
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterUserProfiles
-import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
+import com.fuentescreations.simplerecyclerviewexample.data.api.APICallBack
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
 import com.fuentescreations.simplerecyclerviewexample.application.BaseFragment
 import com.fuentescreations.simplerecyclerviewexample.application.ResultState
+import com.fuentescreations.simplerecyclerviewexample.data.models.Dogs
 import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
 import com.fuentescreations.simplerecyclerviewexample.databinding.FragmentListBinding
 import com.fuentescreations.simplerecyclerviewexample.data.models.UserProfile
+import com.fuentescreations.simplerecyclerviewexample.data.remote.DogsDataSource
 import com.fuentescreations.simplerecyclerviewexample.data.remote.PhotosDataSource
+import com.fuentescreations.simplerecyclerviewexample.domain.dogs.DogsRepoImpl
 import com.fuentescreations.simplerecyclerviewexample.domain.photos.PhotosRepoImpl
-import com.fuentescreations.simplerecyclerviewexample.viewmodels.DogsViewModel
-import com.fuentescreations.simplerecyclerviewexample.viewmodels.PhotosViewModel
-import com.fuentescreations.simplerecyclerviewexample.viewmodels.PhotosViewModelFactory
-import com.fuentescreations.simplerecyclerviewexample.viewmodels.UserProfileViewModel
+import com.fuentescreations.simplerecyclerviewexample.viewmodels.*
 
 class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhotosClickListener,
     AdapterUserProfiles.OnUserProfileClickListener {
 
     private lateinit var binding: FragmentListBinding
+
+    private val dogsViewModel by viewModels<DogsViewModel> {
+        DogsViewModelFactory(
+            DogsRepoImpl(
+                DogsDataSource()
+            )
+        )
+    }
 
     private val photosViewModel by viewModels<PhotosViewModel> {
         PhotosViewModelFactory(
@@ -92,32 +100,30 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         binding.swipeRefreshLayout.setOnRefreshListener { setupTabDogs() }
 
-        onShowLoading()
-
         val listDogs = mutableListOf<String>()
 
         val adapterDogs = AdapterDogs(listDogs)
         binding.rv.adapter = adapterDogs
 
-        val viewModelDogs = ViewModelProvider(this).get(DogsViewModel::class.java)
+        dogsViewModel.getDogs().observe(viewLifecycleOwner, Observer {
+            when (it){
+                is ResultState.Loading->{
+                    onShowLoading()
+                }
+                is ResultState.Success->{
+                    onSuccessLoading()
 
-        val dogsObserver = Observer<List<String>> {
-            listDogs.clear()
-            listDogs.addAll(it)
-            adapterDogs.notifyDataSetChanged()
-        }
-
-        viewModelDogs.getListDogsLiveData().observe(viewLifecycleOwner, dogsObserver)
-
-        viewModelDogs.getListDogs(object : APICallBack {
-            override fun onSuccess() {
-                onSuccessLoading()
-            }
-
-            override fun onFailure(error: String) {
-                onErrorLoading(error)
+                    listDogs.clear()
+                    listDogs.addAll(it.data)
+                    adapterDogs.notifyDataSetChanged()
+                }
+                is ResultState.Failure->{
+                    onErrorLoading(it.exception.toString())
+                }
             }
         })
+
+
     }
 
     private fun setupTabPhotos() {
@@ -130,7 +136,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         val adapterPhotos = AdapterPhotos(listPhotos, this@ListFragment)
         binding.rv.adapter = adapterPhotos
 
-        photosViewModel.fetchLatestPhotos().observe(viewLifecycleOwner, Observer {
+        photosViewModel.getPhotos().observe(viewLifecycleOwner, Observer {
             when (it) {
                 is ResultState.Loading -> {
                     onShowLoading()
@@ -148,27 +154,6 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
             }
         })
 
-/*
-        val viewModelPhotos = ViewModelProvider(this).get(PhotosViewModel::class.java)
-
-        val photosObserver = Observer<List<Photos>> {
-            listPhotos.clear()
-            listPhotos.addAll(it)
-            adapterPhotos.notifyDataSetChanged()
-        }
-
-        viewModelPhotos.getListPhotosLiveData().observe(viewLifecycleOwner, photosObserver)
-
-        viewModelPhotos.getListPhotos(object : APICallBack {
-            override fun onSuccess() {
-                onSuccessLoading()
-            }
-
-            override fun onFailure(error: String) {
-                onErrorLoading(error)
-            }
-        })
-        */
     }
 
     private fun onShowLoading() {

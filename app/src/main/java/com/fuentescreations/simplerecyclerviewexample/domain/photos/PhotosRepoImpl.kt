@@ -6,7 +6,7 @@ import com.fuentescreations.simplerecyclerviewexample.data.remote.PhotosDataSour
 
 class PhotosRepoImpl(private val dataSource: PhotosDataSource) : PhotosRepo {
 
-    override suspend fun getLatestPhotos(): ResultState<List<Photos>> {
+    override suspend fun getPhotos(): ResultState<List<Photos>> {
         return dataSource.getLatestPosts()
     }
 

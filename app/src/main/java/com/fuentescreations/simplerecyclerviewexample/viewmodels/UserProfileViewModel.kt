@@ -3,8 +3,8 @@ package com.fuentescreations.simplerecyclerviewexample.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
-import com.fuentescreations.simplerecyclerviewexample.api.APIService
+import com.fuentescreations.simplerecyclerviewexample.data.api.APICallBack
+import com.fuentescreations.simplerecyclerviewexample.data.api.APIService
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
 import com.fuentescreations.simplerecyclerviewexample.data.models.UserProfile
 import retrofit2.Call

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.fuentescreations.simplerecyclerviewexample.data.models.Dogs
 import com.fuentescreations.simplerecyclerviewexample.databinding.ItemDogBinding
 import com.squareup.picasso.Picasso
 
@@ -23,7 +24,6 @@ class AdapterDogs(private val dogsImages: List<String>) : RecyclerView.Adapter<A
     class DogsViewHolder(private val binding:ItemDogBinding):RecyclerView.ViewHolder(binding.root) {
         fun bind(dogImageUrl: String){
             Glide.with(binding.root.context).load(dogImageUrl).into(binding.ivDog)
-//            Picasso.get().load(dogImageUrl).into(binding.ivDog)
         }
     }
 }
