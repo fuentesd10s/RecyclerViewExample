@@ -12,6 +12,9 @@ interface APIService {
     @GET("photos")
     fun getPhotos(): Call<List<Photos>>
 
+    @GET("photos")
+    suspend fun getPhotos2(): List<Photos>
+
     @GET("image/random/10")
     fun getRandomDogs(): Call<Dogs>
 

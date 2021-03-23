@@ -1,20 +1,16 @@
 package com.fuentescreations.simplerecyclerviewexample.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.fuentescreations.simplerecyclerviewexample.api.APIService
-import com.fuentescreations.simplerecyclerviewexample.api.APICallBack
-import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
-import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.liveData
+import com.fuentescreations.simplerecyclerviewexample.application.ResultState
+import com.fuentescreations.simplerecyclerviewexample.domain.photos.PhotosRepo
+import kotlinx.coroutines.Dispatchers
+import java.lang.Exception
 
-class PhotosViewModel : ViewModel() {
+class PhotosViewModel(private val repo: PhotosRepo) : ViewModel() {
 
+    /*
     private val listPhotosLiveData = MutableLiveData<List<Photos>>()
 
     private fun setListPhotos(listPhotos: List<Photos>) {
@@ -53,5 +49,27 @@ class PhotosViewModel : ViewModel() {
                         callBack.onFailure(t.toString())
                     }
                 })
+    }
+*/
+
+    fun fetchLatestPhotos() = liveData(Dispatchers.IO) {
+
+        emit(ResultState.Loading())
+
+        try {
+
+            emit(repo.getLatestPhotos())
+
+        } catch (e: Exception) {
+
+            emit(ResultState.Failure(e))
+
+        }
+    }
+}
+
+class PhotosViewModelFactory(private val repo: PhotosRepo) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return PhotosViewModel(repo) as T
     }
 }
