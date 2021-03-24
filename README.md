@@ -8,6 +8,8 @@ This project is a RecyclerView example, consuming public apis, using as many And
 - Glide and Picasso
 - Tabs
 - Navigation component (Using Safe Args)
+- Coroutines
+- MVVM
 - ViewModel & LiveData
 - RecyclerView, ConstraintLayout, LinearLayout, CardView, NestedScrollView, etc
 - ViewBinding
