@@ -1,55 +1,26 @@
 package com.fuentescreations.simplerecyclerviewexample.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.fuentescreations.simplerecyclerviewexample.data.api.APICallBack
-import com.fuentescreations.simplerecyclerviewexample.data.api.APIService
-import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
-import com.fuentescreations.simplerecyclerviewexample.data.models.UserProfile
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import androidx.lifecycle.*
+import com.fuentescreations.simplerecyclerviewexample.application.ResultState
+import com.fuentescreations.simplerecyclerviewexample.domain.userProfile.UserProfileRepo
+import kotlinx.coroutines.Dispatchers
+import java.lang.Exception
 
-class UserProfileViewModel : ViewModel() {
+class UserProfileViewModel(private val repo:UserProfileRepo) : ViewModel() {
 
-    private val userProfilesLiveData = MutableLiveData<List<UserProfile>>()
+    fun getUserProfiles() = liveData(Dispatchers.IO){
+        emit(ResultState.Loading())
 
-    private fun setUserProfileList(userProfiles: List<UserProfile>) {
-        userProfilesLiveData.value = userProfiles
+        try {
+            emit(repo.getUserProfiles())
+        }catch (e:Exception){
+            emit(ResultState.Failure(e))
+        }
     }
+}
 
-    fun getUserProfilesLiveData(): LiveData<List<UserProfile>> {
-        return userProfilesLiveData
-    }
-
-    fun getUserProfilesList(callBack: APICallBack) {
-        val mRetrofit = Retrofit
-            .Builder()
-            .baseUrl(AppConstans.BASE_URL_PROFILES)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(APIService::class.java)
-
-        mRetrofit
-            .getUserProfiles("users.json")
-            .enqueue(object : Callback<List<UserProfile>> {
-                override fun onResponse(
-                    call: Call<List<UserProfile>>,
-                    response: Response<List<UserProfile>>
-                ) {
-                    if (response.isSuccessful) {
-                        setUserProfileList(response.body()!!)
-                        callBack.onSuccess()
-                    }
-                }
-
-                override fun onFailure(call: Call<List<UserProfile>>, t: Throwable) {
-                    callBack.onFailure(t.toString())
-                }
-
-            })
+class UserProfileViewModelFactory(private val repo:UserProfileRepo):ViewModelProvider.Factory{
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return UserProfileViewModel(repo) as T
     }
 }

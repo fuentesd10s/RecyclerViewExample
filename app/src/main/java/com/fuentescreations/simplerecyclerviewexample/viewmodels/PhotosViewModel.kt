@@ -10,17 +10,12 @@ import java.lang.Exception
 class PhotosViewModel(private val repo: PhotosRepo) : ViewModel() {
 
     fun getPhotos() = liveData(Dispatchers.IO) {
-
         emit(ResultState.Loading())
 
         try {
-
             emit(repo.getPhotos())
-
         } catch (e: Exception) {
-
             emit(ResultState.Failure(e))
-
         }
     }
 }

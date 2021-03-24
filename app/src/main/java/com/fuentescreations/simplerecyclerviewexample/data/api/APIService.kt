@@ -10,17 +10,11 @@ import retrofit2.http.Url
 interface APIService {
 
     @GET("photos")
-    fun getPhotos(): Call<List<Photos>>
-
-    @GET("photos")
-    suspend fun getPhotos2(): List<Photos>
+    suspend fun getPhotos(): List<Photos>
 
     @GET("image/random/10")
-    fun getRandomDogs(): Call<Dogs>
-
-    @GET("image/random/10")
-    suspend fun getRandomDogs2(): Dogs
+    suspend fun getRandomDogs(): Dogs
 
     @GET
-    fun getUserProfiles(@Url url:String): Call<List<UserProfile>>
+    suspend fun getUserProfiles(@Url url:String="users.json"): List<UserProfile>
 }

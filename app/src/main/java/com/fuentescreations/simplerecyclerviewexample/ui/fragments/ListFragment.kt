@@ -11,24 +11,32 @@ import com.fuentescreations.simplerecyclerviewexample.R
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterDogs
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterPhotos
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterUserProfiles
-import com.fuentescreations.simplerecyclerviewexample.data.api.APICallBack
 import com.fuentescreations.simplerecyclerviewexample.application.AppConstans
 import com.fuentescreations.simplerecyclerviewexample.application.BaseFragment
 import com.fuentescreations.simplerecyclerviewexample.application.ResultState
-import com.fuentescreations.simplerecyclerviewexample.data.models.Dogs
 import com.fuentescreations.simplerecyclerviewexample.data.models.Photos
 import com.fuentescreations.simplerecyclerviewexample.databinding.FragmentListBinding
 import com.fuentescreations.simplerecyclerviewexample.data.models.UserProfile
 import com.fuentescreations.simplerecyclerviewexample.data.remote.DogsDataSource
 import com.fuentescreations.simplerecyclerviewexample.data.remote.PhotosDataSource
+import com.fuentescreations.simplerecyclerviewexample.data.remote.UserProfilesDataSource
 import com.fuentescreations.simplerecyclerviewexample.domain.dogs.DogsRepoImpl
 import com.fuentescreations.simplerecyclerviewexample.domain.photos.PhotosRepoImpl
+import com.fuentescreations.simplerecyclerviewexample.domain.userProfile.UserProfileRepoImpl
 import com.fuentescreations.simplerecyclerviewexample.viewmodels.*
 
 class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhotosClickListener,
     AdapterUserProfiles.OnUserProfileClickListener {
 
     private lateinit var binding: FragmentListBinding
+
+    private val userProfileViewModel by viewModels<UserProfileViewModel> {
+        UserProfileViewModelFactory(
+            UserProfileRepoImpl(
+                UserProfilesDataSource()
+            )
+        )
+    }
 
     private val dogsViewModel by viewModels<DogsViewModel> {
         DogsViewModelFactory(
@@ -65,31 +73,25 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
         binding.swipeRefreshLayout.setOnRefreshListener { setupUserProfiles() }
 
-        onShowLoading()
-
         val userProfilesList = mutableListOf<UserProfile>()
 
         val adapterUserProfiles = AdapterUserProfiles(userProfilesList, this@ListFragment)
         binding.rv.adapter = adapterUserProfiles
 
-        val viewModelUserProfiles = ViewModelProvider(this).get(UserProfileViewModel::class.java)
-
-        val userProfilesObserver = Observer<List<UserProfile>> {
-            userProfilesList.clear()
-            userProfilesList.addAll(it)
-            adapterUserProfiles.notifyDataSetChanged()
-        }
-
-        viewModelUserProfiles.getUserProfilesLiveData()
-            .observe(viewLifecycleOwner, userProfilesObserver)
-
-        viewModelUserProfiles.getUserProfilesList(object : APICallBack {
-            override fun onSuccess() {
-                onSuccessLoading()
-            }
-
-            override fun onFailure(error: String) {
-                onErrorLoading(error)
+        userProfileViewModel.getUserProfiles().observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is ResultState.Loading -> {
+                    onShowLoading()
+                }
+                is ResultState.Success -> {
+                    onSuccessLoading()
+                    userProfilesList.clear()
+                    userProfilesList.addAll(it.data)
+                    adapterUserProfiles.notifyDataSetChanged()
+                }
+                is ResultState.Failure -> {
+                    onFailureLoading(it.exception.toString())
+                }
             }
         })
     }
@@ -106,19 +108,19 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         binding.rv.adapter = adapterDogs
 
         dogsViewModel.getDogs().observe(viewLifecycleOwner, Observer {
-            when (it){
-                is ResultState.Loading->{
+            when (it) {
+                is ResultState.Loading -> {
                     onShowLoading()
                 }
-                is ResultState.Success->{
+                is ResultState.Success -> {
                     onSuccessLoading()
 
                     listDogs.clear()
                     listDogs.addAll(it.data)
                     adapterDogs.notifyDataSetChanged()
                 }
-                is ResultState.Failure->{
-                    onErrorLoading(it.exception.toString())
+                is ResultState.Failure -> {
+                    onFailureLoading(it.exception.toString())
                 }
             }
         })
@@ -149,7 +151,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
                     adapterPhotos.notifyDataSetChanged()
                 }
                 is ResultState.Failure -> {
-                    onErrorLoading(it.exception.toString())
+                    onFailureLoading(it.exception.toString())
                 }
             }
         })
@@ -167,7 +169,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun onErrorLoading(error: String) {
+    private fun onFailureLoading(error: String) {
         binding.swipeRefreshLayout.isRefreshing = false
         binding.lyNoInternet.visibility = View.VISIBLE
         Log.d("Error", "onFailure: $error")

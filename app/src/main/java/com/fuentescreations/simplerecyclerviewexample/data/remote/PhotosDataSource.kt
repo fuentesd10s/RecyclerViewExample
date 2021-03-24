@@ -18,7 +18,7 @@ class PhotosDataSource {
             .build()
             .create(APIService::class.java)
 
-        photosList.addAll(mRetrofit.getPhotos2())
+        photosList.addAll(mRetrofit.getPhotos())
 
         return ResultState.Success(photosList)
     }
