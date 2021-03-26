@@ -62,8 +62,8 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
             when (getInt(AppConstans.TAB_POSITION)) {
                 0 -> setupUserProfiles()
-                1 -> setupTabDogs()
-                2 -> setupTabPhotos()
+                1 -> setupTabPhotos()
+                2 -> setupTabDogs()
             }
         }
     }
@@ -85,6 +85,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
                 }
                 is ResultState.Success -> {
                     onSuccessLoading()
+
                     userProfilesList.clear()
                     userProfilesList.addAll(it.data)
                     adapterUserProfiles.notifyDataSetChanged()
