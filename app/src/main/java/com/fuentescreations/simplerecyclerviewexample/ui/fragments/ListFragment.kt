@@ -78,7 +78,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         val adapterUserProfiles = AdapterUserProfiles(userProfilesList, this@ListFragment)
         binding.rv.adapter = adapterUserProfiles
 
-        userProfileViewModel.getUserProfiles().observe(viewLifecycleOwner, Observer {
+        userProfileViewModel.getUserProfiles.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is ResultState.Loading -> {
                     onShowLoading()
@@ -108,7 +108,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         val adapterDogs = AdapterDogs(listDogs)
         binding.rv.adapter = adapterDogs
 
-        dogsViewModel.getDogs().observe(viewLifecycleOwner, Observer {
+        dogsViewModel.getDogs.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is ResultState.Loading -> {
                     onShowLoading()
@@ -139,7 +139,7 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
         val adapterPhotos = AdapterPhotos(listPhotos, this@ListFragment)
         binding.rv.adapter = adapterPhotos
 
-        photosViewModel.getPhotos().observe(viewLifecycleOwner, Observer {
+        photosViewModel.getPhotos.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is ResultState.Loading -> {
                     onShowLoading()

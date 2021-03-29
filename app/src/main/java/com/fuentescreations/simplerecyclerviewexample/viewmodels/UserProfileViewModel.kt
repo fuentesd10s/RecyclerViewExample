@@ -8,7 +8,7 @@ import java.lang.Exception
 
 class UserProfileViewModel(private val repo:UserProfileRepo) : ViewModel() {
 
-    fun getUserProfiles() = liveData(Dispatchers.IO){
+    val getUserProfiles = liveData(Dispatchers.IO){
         emit(ResultState.Loading())
 
         try {

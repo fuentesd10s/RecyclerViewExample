@@ -8,7 +8,7 @@ import java.lang.Exception
 
 class DogsViewModel(private val repo: DogsRepo) : ViewModel() {
 
-    fun getDogs() = liveData(Dispatchers.IO) {
+    val getDogs = liveData(Dispatchers.IO) {
         emit(ResultState.Loading())
 
         try {

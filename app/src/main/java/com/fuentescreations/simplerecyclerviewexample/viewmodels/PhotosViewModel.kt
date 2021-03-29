@@ -9,7 +9,7 @@ import java.lang.Exception
 
 class PhotosViewModel(private val repo: PhotosRepo) : ViewModel() {
 
-    fun getPhotos() = liveData(Dispatchers.IO) {
+    val getPhotos = liveData(Dispatchers.IO) {
         emit(ResultState.Loading())
 
         try {
