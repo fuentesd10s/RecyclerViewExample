@@ -9,13 +9,23 @@ import java.lang.Exception
 
 class PhotosViewModel(private val repo: PhotosRepo) : ViewModel() {
 
-    val getPhotos = liveData(Dispatchers.IO) {
-        emit(ResultState.Loading())
+    private val loadTrigger = MutableLiveData(Unit)
 
-        try {
-            emit(repo.getPhotos())
-        } catch (e: Exception) {
-            emit(ResultState.Failure(e))
+    fun refreshData() {
+        loadTrigger.value = Unit
+    }
+
+    val getPhotos: LiveData<ResultState<List<Photos>>> = loadTrigger.switchMap {
+
+        liveData(Dispatchers.IO) {
+
+            emit(ResultState.Loading())
+
+            try {
+                emit(repo.getPhotos())
+            } catch (e: Exception) {
+                emit(ResultState.Failure(e))
+            }
         }
     }
 }

@@ -8,13 +8,23 @@ import java.lang.Exception
 
 class DogsViewModel(private val repo: DogsRepo) : ViewModel() {
 
-    val getDogs = liveData(Dispatchers.IO) {
-        emit(ResultState.Loading())
+    private val loadTrigger = MutableLiveData(Unit)
 
-        try {
-            emit(repo.getDogs())
-        } catch (e: Exception) {
-            emit(ResultState.Failure(e))
+    fun refreshData() {
+        loadTrigger.value = Unit
+    }
+
+    val getDogs: LiveData<ResultState<List<String>>> = loadTrigger.switchMap {
+
+        liveData(Dispatchers.IO) {
+
+            emit(ResultState.Loading())
+
+            try {
+                emit(repo.getDogs())
+            } catch (e: Exception) {
+                emit(ResultState.Failure(e))
+            }
         }
     }
 }

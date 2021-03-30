@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fuentescreations.simplerecyclerviewexample.R
 import com.fuentescreations.simplerecyclerviewexample.adapters.AdapterDogs
@@ -69,9 +68,9 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
     }
 
     private fun setupUserProfiles() {
-        binding.btnRetry.setOnClickListener { setupUserProfiles() }
+        binding.btnRetry.setOnClickListener { userProfileViewModel.refreshData() }
 
-        binding.swipeRefreshLayout.setOnRefreshListener { setupUserProfiles() }
+        binding.swipeRefreshLayout.setOnRefreshListener { userProfileViewModel.refreshData() }
 
         val userProfilesList = mutableListOf<UserProfile>()
 
@@ -99,9 +98,10 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
 
 
     private fun setupTabDogs() {
-        binding.btnRetry.setOnClickListener { setupTabDogs() }
 
-        binding.swipeRefreshLayout.setOnRefreshListener { setupTabDogs() }
+        binding.btnRetry.setOnClickListener { dogsViewModel.refreshData() }
+
+        binding.swipeRefreshLayout.setOnRefreshListener { dogsViewModel.refreshData() }
 
         val listDogs = mutableListOf<String>()
 
@@ -130,9 +130,9 @@ class ListFragment : BaseFragment(R.layout.fragment_list), AdapterPhotos.OnPhoto
     }
 
     private fun setupTabPhotos() {
-        binding.btnRetry.setOnClickListener { setupTabPhotos() }
+        binding.btnRetry.setOnClickListener { photosViewModel.refreshData() }
 
-        binding.swipeRefreshLayout.setOnRefreshListener { setupTabPhotos() }
+        binding.swipeRefreshLayout.setOnRefreshListener { photosViewModel.refreshData() }
 
         val listPhotos = mutableListOf<Photos>()
 
