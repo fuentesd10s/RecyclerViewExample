@@ -15,6 +15,6 @@ interface APIService {
     @GET("image/random/10")
     suspend fun getRandomDogs(): Dogs
 
-    @GET
-    suspend fun getUserProfiles(@Url url:String="users.json"): List<UserProfile>
+    @GET("users.json")
+    suspend fun getUserProfiles(): List<UserProfile>
 }
